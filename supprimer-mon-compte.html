@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Supprimer mon compte — Lettre Ouverte</title>
+<meta name="description" content="Supprimer définitivement ton compte Lettre Ouverte et toutes tes données, sans ouvrir l'application.">
+<link rel="icon" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter+Tight:wght@400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="./"><span class="mark"><svg viewBox="0 0 24 24"><path d="M2.5 11.2 21 3.5l-4.6 17.2-5.3-5.1-3.4 3.2.4-4.9L17 6.6 6.9 13.1z"/></svg></span><span class="brand">Lettre Ouverte</span></a>
+  </header>
+
+  <span class="postal">Compte</span>
+  <h1>Supprimer <em>mon compte</em></h1>
+  <p class="muted">Tu peux le faire ici sans ouvrir l'application, ou dans l'app : <b>Moi → Réglages → Supprimer mon compte</b>.</p>
+
+  <div class="card">
+    <h2 style="margin-top:0">Ce qui sera supprimé, définitivement</h2>
+    <ul>
+      <li>ton profil (nom de plume, pseudo, présentation, photo, date de naissance) et ton adresse e-mail ;</li>
+      <li>toutes tes lettres (ouvertes, envoyées, à toi-même, capsules), leurs photos et leurs réponses ;</li>
+      <li>tes réponses, « Touché », lectures, abonnements, correspondances et Proches ;</li>
+      <li>tes notifications et l'identifiant de notification de ton téléphone ;</li>
+      <li>les Maisons dont tu es le seul responsable.</li>
+    </ul>
+    <p class="muted">Les signalements que tu as envoyés restent, sans aucun lien avec toi, pour la modération. Les sauvegardes techniques de la base sont supprimées au plus tard 30 jours après leur création.</p>
+  </div>
+
+  <!-- Étape 1 : adresse -->
+  <section id="s-email" class="card">
+    <ol class="steps"><li>Saisis l'adresse e-mail de ton compte (y compris un compte créé avec Google).</li></ol>
+    <form id="f-email">
+      <label for="email">Adresse e-mail</label>
+      <input id="email" type="email" autocomplete="email" required placeholder="toi@exemple.com">
+      <button id="b-email" type="submit">Recevoir un code</button>
+    </form>
+    <p id="m-email" class="msg" hidden></p>
+  </section>
+
+  <!-- Étape 2 : code -->
+  <section id="s-code" class="card" hidden>
+    <ol class="steps" start="2"><li>Nous avons envoyé un e-mail « Ton lien de connexion » à <b id="email-echo"></b>. Saisis le <b>code de vérification</b> qu'il contient. Regarde aussi dans les spams.</li></ol>
+    <form id="f-code">
+      <label for="code">Code reçu par e-mail</label>
+      <input id="code" class="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="10" required placeholder="••••••">
+      <button id="b-code" type="submit">Vérifier</button>
+      <button id="b-back" type="button" class="ghost">Changer d'adresse</button>
+    </form>
+    <p id="m-code" class="msg" hidden></p>
+  </section>
+
+  <!-- Étape 3 : confirmation -->
+  <section id="s-confirm" class="card" hidden>
+    <ol class="steps" start="3"><li>Dernière étape. Le compte <b id="who"></b> et toutes ses données seront effacés. <b>C'est irréversible.</b></li></ol>
+    <label class="check"><input id="sure" type="checkbox"> Je comprends que mes lettres et mon compte seront supprimés définitivement.</label>
+    <button id="b-delete" type="button" disabled>Supprimer définitivement mon compte</button>
+    <button id="b-cancel" type="button" class="ghost">Annuler</button>
+    <p id="m-confirm" class="msg" hidden></p>
+  </section>
+
+  <!-- Terminé -->
+  <section id="s-done" class="card" hidden>
+    <h2 style="margin-top:0">Ton compte est supprimé.</h2>
+    <p class="muted">Merci d'avoir écrit avec nous. Tu peux désinstaller l'application. Si tu reviens un jour, une feuille blanche t'attendra.</p>
+  </section>
+
+  <footer>
+    <a href="confidentialite">Confidentialité</a>
+    <a href="./">Lettre Ouverte</a>
+    <span>Contact : hello@josuecode.com</span>
+  </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<script>
+(function () {
+  const cfg = window.LO_CONFIG;
+  const sb = window.supabase.createClient(cfg.url, cfg.key, {
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+  });
+  const $ = (id) => document.getElementById(id);
+  let email = "";
+  let session = null;
+
+  function show(id) {
+    for (const s of ["s-email", "s-code", "s-confirm", "s-done"]) $(s).hidden = s !== id;
+  }
+  function say(id, text, err) {
+    const el = $(id);
+    el.textContent = text;
+    el.className = "msg" + (err ? " err" : "");
+    el.hidden = !text;
+  }
+  function busy(btn, on, label) {
+    btn.disabled = on;
+    if (label) btn.textContent = label;
+  }
+
+  $("f-email").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    email = $("email").value.trim().toLowerCase();
+    if (!email.includes("@")) return say("m-email", "Saisis une adresse e-mail valide.", true);
+    busy($("b-email"), true, "Envoi…");
+    const { error } = await sb.auth.signInWithOtp({ email, options: { shouldCreateUser: false } });
+    busy($("b-email"), false, "Recevoir un code");
+    // On ne révèle pas si un compte existe : même suite dans tous les cas, sauf limite de débit.
+    if (error && /rate|seconds|too many/i.test(error.message)) {
+      return say("m-email", "Trop de demandes. Patiente une minute avant de réessayer.", true);
+    }
+    say("m-email", "");
+    $("email-echo").textContent = email;
+    show("s-code");
+    $("code").focus();
+  });
+
+  $("b-back").addEventListener("click", () => { say("m-code", ""); show("s-email"); });
+
+  $("f-code").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const token = $("code").value.replace(/\D/g, "");
+    if (token.length < 6) return say("m-code", "Le code fait au moins 6 chiffres.", true);
+    busy($("b-code"), true, "Vérification…");
+    const { data, error } = await sb.auth.verifyOtp({ email, token, type: "email" });
+    busy($("b-code"), false, "Vérifier");
+    if (error || !data.session) {
+      return say("m-code", "Code incorrect ou expiré. Vérifie l'e-mail le plus récent, ou recommence.", true);
+    }
+    session = data.session;
+    $("who").textContent = email;
+    say("m-code", "");
+    show("s-confirm");
+  });
+
+  $("sure").addEventListener("change", () => { $("b-delete").disabled = !$("sure").checked; });
+
+  $("b-cancel").addEventListener("click", async () => {
+    await sb.auth.signOut().catch(() => {});
+    session = null;
+    $("sure").checked = false;
+    show("s-email");
+  });
+
+  $("b-delete").addEventListener("click", async () => {
+    if (!session) return show("s-email");
+    busy($("b-delete"), true, "Suppression…");
+    try {
+      const res = await fetch(cfg.url + "/functions/v1/delete-account", {
+        method: "POST",
+        headers: { Authorization: "Bearer " + session.access_token, apikey: cfg.key, "Content-Type": "application/json" },
+        body: "{}",
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      session = null;
+      show("s-done");
+    } catch (_) {
+      busy($("b-delete"), false, "Supprimer définitivement mon compte");
+      say("m-confirm", "La suppression a échoué. Réessaie dans un instant, ou écris-nous à hello@josuecode.com.", true);
+    }
+  });
+})();
+</script>
+</body>
+</html>
