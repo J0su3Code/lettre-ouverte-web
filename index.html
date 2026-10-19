@@ -2,32 +2,652 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Lettre Ouverte — le réseau social des lettres</title>
-<meta name="description" content="Écris des lettres comme autrefois : papier, encre, cachet. À toi-même, à quelqu'un, au hasard, ou sur La Table.">
+<meta name="description" content="Écris de vraies lettres : papier, encre, cachet de cire. À toi dans dix ans, à quelqu'un qui compte, à un inconnu tiré au sort, ou sur La Table. Sur Android.">
+<meta name="theme-color" content="#F8F9FC">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Lettre Ouverte — des lettres, pas des posts">
+<meta property="og:description" content="Le réseau social des lettres : écris, scelle, et sois vraiment lu.">
+<meta property="og:image" content="https://lettre-ouverte-web.vercel.app/img/og.jpg">
+<meta property="og:url" content="https://lettre-ouverte-web.vercel.app/">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Caveat:wght@500&family=Homemade+Apple&family=Courier+Prime&family=Shadows+Into+Light&display=swap" rel="stylesheet">
+<script>
+  // Test fermé jusqu'au dimanche 15 novembre 2026 : ensuite, la mention disparaît d'elle-même.
+  if (Date.now() >= Date.parse("2026-11-15T00:00:00Z")) document.documentElement.classList.add("released");
+</script>
+<style>
+:root{
+  --day:#F8F9FC;--surface:#fff;--alt:#F1F2F6;--ink:#111216;--muted:#5F6370;--faint:#A2A6B1;--line:#E4E6EC;
+  --red:#ED1C24;--blue:#1F3A93;--night:#0E0D0C;--nsurf:#1A1714;--cream:#EDE6DA;--glow:#FFE7B8;--wa:#25D366;
+  --serif:"Instrument Serif",Georgia,serif;--sans:"Inter Tight",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;
+  --pad:clamp(20px,5vw,56px);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--day);color:var(--ink);font:17px/1.55 var(--sans);overflow-x:hidden}
+img{max-width:100%;display:block}
+a{color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:0 var(--pad)}
+.serif{font-family:var(--serif);font-weight:400;letter-spacing:-.01em}
+.postal{font:600 12px/1.4 var(--mono);letter-spacing:.28em;text-transform:uppercase;color:var(--red)}
+h1,h2,h3{font-family:var(--serif);font-weight:400;margin:0;letter-spacing:-.01em}
+h2{font-size:clamp(40px,7vw,76px);line-height:.98}
+h2 em,h1 em{color:var(--red)}
+.lead{font-size:clamp(17px,2.2vw,21px);color:var(--muted);max-width:620px}
+.released .beta{display:none!important}
+.after{display:none!important}
+.released .after{display:revert!important}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+/* ---------- grain papier partagé ---------- */
+.grain{position:relative;isolation:isolate}
+.grain::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:-1;opacity:.55;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .55  0 0 0 0 .5  0 0 0 0 .42  0 0 0 .22 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+
+/* ---------- barre ---------- */
+.nav{position:sticky;top:0;z-index:50;padding-top:env(safe-area-inset-top);background:rgba(248,249,252,.82);backdrop-filter:saturate(1.4) blur(14px);-webkit-backdrop-filter:saturate(1.4) blur(14px);border-bottom:1px solid transparent;transition:border-color .3s}
+.nav.scrolled{border-color:var(--line)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+.nav img{height:40px;width:auto}
+.nav-links{display:flex;gap:26px;align-items:center;font-size:15px}
+.nav-links a{text-decoration:none;color:var(--muted)}
+.nav-links a:hover{color:var(--ink)}
+@media (max-width:820px){.nav-links a.hide-m{display:none}}
+
+/* ---------- boutons ---------- */
+.btn{display:inline-flex;align-items:center;gap:12px;border-radius:999px;padding:14px 22px;font:600 16px/1 var(--sans);text-decoration:none;border:0;cursor:pointer;transition:transform .25s cubic-bezier(.2,1.6,.4,1),box-shadow .25s}
+.btn:active{transform:scale(.96)}
+.btn-play{background:var(--ink);color:#fff;padding:12px 22px 12px 18px;box-shadow:0 14px 34px rgba(17,18,22,.22)}
+.btn-play small{display:block;font:500 11px/1.2 var(--sans);opacity:.75;letter-spacing:.02em}
+.btn-play b{display:block;font:600 19px/1.15 var(--sans)}
+.btn-play svg{width:28px;height:28px;flex:none}
+.btn-wa{background:var(--wa);color:#05210f;box-shadow:0 12px 30px rgba(37,211,102,.28)}
+.btn-wa svg{width:22px;height:22px}
+.btn-ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn-red{background:var(--red);color:#fff;box-shadow:0 14px 34px rgba(237,28,36,.3)}
+.btn:hover{transform:translateY(-2px)}
+.nav .btn{padding:10px 16px;font-size:14px}
+
+.beta-tag{display:inline-flex;align-items:center;gap:10px;margin-top:14px;padding:9px 14px 9px 10px;border-radius:14px;background:#FFF6D6;border:1px dashed #E2B53E;color:#5A4300;font-size:14px;line-height:1.35;text-decoration:none;max-width:460px}
+.beta-tag i{font-style:normal;flex:none;width:26px;height:26px;border-radius:13px;background:#E2B53E;color:#fff;display:grid;place-items:center;font:700 13px var(--mono)}
+.beta-tag b{color:#3d2e00}
+
+/* ---------- héros ---------- */
+.hero{padding:clamp(28px,6vw,72px) 0 clamp(40px,8vw,110px);position:relative;overflow:hidden}
+.hero .wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center}
+.hero h1{font-size:clamp(54px,9.5vw,118px);line-height:.92;margin:18px 0 22px}
+.type{font:clamp(15px,2vw,18px)/1.5 "Courier Prime",monospace;color:var(--muted);min-height:3em}
+.type .cur{display:inline-block;width:.55em;background:var(--red);animation:blink 1s steps(1) infinite;color:transparent}
+@keyframes blink{50%{opacity:0}}
+.cta{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:28px}
+.hero-phone{position:relative;justify-self:center;width:min(330px,78vw);aspect-ratio:540/1206;margin-top:10px}
+.phone{position:absolute;inset:0;border-radius:44px;padding:10px;background:#15161A;box-shadow:0 50px 100px rgba(27,32,48,.28),0 14px 34px rgba(27,32,48,.16)}
+.phone .screen{position:relative;width:100%;height:100%;border-radius:35px;overflow:hidden;background:#000}
+.phone .screen img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .9s ease,transform 6s ease;transform:scale(1.04)}
+.phone .screen img.on{opacity:1;transform:scale(1)}
+.float{position:absolute;filter:drop-shadow(0 18px 30px rgba(27,32,48,.2));animation:bob 6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-12px) rotate(var(--r,0deg))}}
+.f-stamp{right:-46px;top:12%;width:92px;--r:8deg;transform:rotate(8deg)}
+.f-wax{left:-52px;bottom:14%;width:96px;animation-delay:-2s}
+.f-mark{right:-30px;bottom:6%;width:120px;animation-delay:-4s;opacity:.85}
+@media (max-width:880px){.hero .wrap{grid-template-columns:1fr}.hero-phone{width:min(300px,74vw)}.f-stamp{right:-22px;width:70px}.f-wax{left:-24px;width:72px}.f-mark{display:none}}
+
+/* ---------- révélation au défilement ---------- */
+.rv{opacity:0;transform:translateY(34px);transition:opacity .9s ease,transform .9s cubic-bezier(.2,.8,.2,1)}
+.rv.in{opacity:1;transform:none}
+.rv.d1{transition-delay:.08s}.rv.d2{transition-delay:.16s}.rv.d3{transition-delay:.24s}
+
+section{padding:clamp(64px,10vw,130px) 0}
+.sec-head{display:grid;gap:16px;margin-bottom:clamp(30px,5vw,56px)}
+
+/* ---------- trois gestes ---------- */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:28px;padding:30px 26px;position:relative;overflow:hidden}
+.step .n{font:600 13px var(--mono);color:var(--faint);letter-spacing:.2em}
+.step h3{font-size:40px;margin:14px 0 8px}
+.step p{margin:0;color:var(--muted)}
+.step svg{position:absolute;right:20px;top:22px;width:52px;height:52px}
+@media (max-width:820px){.steps{grid-template-columns:1fr}}
+
+/* ---------- atelier interactif ---------- */
+.atelier{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,5vw,64px);align-items:center}
+.sheet{position:relative;aspect-ratio:3/3.6;width:100%;max-width:470px;justify-self:center;padding:13% 11% 12%;box-shadow:0 2px 4px rgba(27,32,48,.08),0 22px 50px rgba(27,32,48,.14);transition:background-color .5s,transform .5s;transform:rotate(-1.2deg);background-color:#F4EEDF;overflow:hidden}
+.sheet::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.6;mix-blend-mode:multiply;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='.012 .04' numOctaves='3' seed='4'/><feColorMatrix values='0 0 0 0 .5  0 0 0 0 .43  0 0 0 0 .33  0 0 0 .16 0'/></filter><rect width='100%' height='100%' filter='url(%23p)'/></svg>")}
+.sheet.lined{background-image:repeating-linear-gradient(transparent 0 calc(var(--lh) - 1px),rgba(70,90,160,.28) calc(var(--lh) - 1px) var(--lh)),linear-gradient(90deg,transparent 9%,rgba(237,28,36,.4) 9% calc(9% + 1px),transparent calc(9% + 1px))}
+.sheet.airmail{border:10px solid transparent;border-image:repeating-linear-gradient(45deg,#D7262D 0 12px,transparent 12px 20px,#1F3A93 20px 32px,transparent 32px 40px) 10}
+.sheet.gilded{box-shadow:inset 0 0 0 14px transparent,inset 0 0 0 16px #C9A961,inset 0 0 0 21px transparent,inset 0 0 0 22px #C9A961,0 22px 50px rgba(27,32,48,.14)}
+.sheet .date{text-align:right;font-size:.92em;margin:0 19% 1.1em 0}
+.sheet .body{outline:none;white-space:pre-wrap;min-height:6em}
+.sheet .sign{text-align:right;margin-top:1em}
+.sheet .stamp{position:absolute;right:7%;top:5%;width:15%;transform:rotate(6deg)}
+#letter{--lh:2em;font-size:clamp(18px,2.7vw,25px);line-height:var(--lh);transition:color .4s}
+.controls{display:grid;gap:22px}
+.ctrl-label{font:600 12px var(--mono);letter-spacing:.24em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:10px 16px;font:500 15px var(--sans);cursor:pointer;display:inline-flex;align-items:center;gap:9px;transition:all .2s;color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.chip .sw{width:20px;height:20px;border-radius:50%;border:1px solid rgba(0,0,0,.12)}
+.hint{font-size:14px;color:var(--faint)}
+@media (max-width:880px){.atelier{grid-template-columns:1fr}.controls{order:2}}
+
+/* ---------- scellement ---------- */
+.seal-demo{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,5vw,64px);align-items:center}
+.stage{position:relative;height:clamp(400px,62vw,460px);display:grid;place-items:end center;padding-bottom:56px;perspective:1200px;pointer-events:none}
+.env{position:relative;width:min(380px,82vw);aspect-ratio:1.6;transition:transform 1.1s cubic-bezier(.6,-.3,.4,1.3),opacity .6s}
+.env .back,.env .front{position:absolute;inset:0;border-radius:6px}
+.env .back{background:#E9DFC7;box-shadow:0 26px 60px rgba(27,32,48,.22)}
+.env .front{z-index:3;clip-path:polygon(0 0,50% 60%,100% 0,100% 100%,0 100%);background:linear-gradient(32deg,#D9CCAB 0 49.8%,transparent 50%) left bottom/50.5% 100% no-repeat,linear-gradient(-32deg,#D5C7A4 0 49.8%,transparent 50%) right bottom/50.5% 100% no-repeat,#E4D9BE}
+.env .flap{position:absolute;left:0;right:0;top:0;height:61%;z-index:4;transform-origin:top;transform:rotateX(180deg);transition:transform .8s cubic-bezier(.6,0,.3,1) .45s;clip-path:polygon(0 0,100% 0,50% 100%);background:#E2D6B9}
+.env .paper{position:absolute;left:7%;right:7%;bottom:8%;height:92%;z-index:2;background:#F7F2E6;border-radius:3px;padding:8% 9%;font:clamp(14px,2.4vw,18px)/1.6 Caveat,cursive;color:#2846B4;transform:translateY(-62%);transition:transform .7s cubic-bezier(.6,0,.3,1);box-shadow:0 6px 16px rgba(0,0,0,.08)}
+.env .wax{position:absolute;left:50%;top:52%;z-index:6;width:23%;aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%) scale(2.6);opacity:0;background:radial-gradient(circle at 36% 32%,#ff5d62,#c4141b 56%,#8e0d12);box-shadow:0 10px 20px rgba(0,0,0,.35),inset 0 -5px 10px rgba(0,0,0,.25);display:grid;place-items:center;transition:transform .35s cubic-bezier(.3,1.8,.5,1) 1.15s,opacity .2s 1.15s}
+.env .wax svg{width:44%;height:44%;fill:rgba(255,255,255,.55)}
+.env .wax::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:2px solid rgba(196,20,27,.0)}
+.env .stampbox{position:absolute;right:6%;top:8%;z-index:5;width:16%;opacity:0;transform:scale(1.8) rotate(-8deg);transition:all .35s cubic-bezier(.3,1.6,.5,1) 1.45s}
+.env .pm{position:absolute;right:13%;top:14%;z-index:5;width:26%;opacity:0;transition:opacity .2s 1.75s}
+.stage.sealed .flap{transform:rotateX(0)}
+.stage.sealed .paper{transform:translateY(0)}
+.stage.sealed .wax{transform:translate(-50%,-50%) scale(1);opacity:1}
+.stage.sealed .stampbox{opacity:1;transform:scale(1) rotate(6deg)}
+.stage.sealed .pm{opacity:.8}
+.stage.flown .env{transform:translate(70vw,-50vh) rotate(18deg) scale(.6);opacity:0;transition-delay:0s}
+.stage.cracked .wax{transition:transform .25s,opacity .4s .15s;transform:translate(-50%,-50%) scale(1.15) rotate(12deg);opacity:0}
+.stage.cracked .flap{transform:rotateX(180deg);transition-delay:.25s}
+.stage.cracked .paper{transform:translateY(-62%);transition-delay:.7s}
+.stage .msg{position:absolute;bottom:0;left:0;right:0;text-align:center;font:600 13px var(--mono);letter-spacing:.2em;text-transform:uppercase;color:var(--red);opacity:0;transition:opacity .4s}
+.stage.flown .msg{opacity:1;transition-delay:.7s}
+@media (max-width:880px){.seal-demo{grid-template-columns:1fr}}
+
+/* ---------- à qui écris-tu ---------- */
+.night{background:var(--night);color:var(--cream)}
+.night .lead{color:#A89F91}
+.night h2 em{color:var(--glow)}
+.night .postal{color:var(--glow)}
+.who{display:grid;grid-template-columns:1fr 360px;gap:clamp(24px,5vw,70px);align-items:center}
+.tabs{display:grid;gap:12px}
+.tab{display:flex;gap:18px;align-items:center;text-align:left;width:100%;border-radius:22px;padding:18px 20px;background:rgba(36,32,27,.55);border:1.5px solid rgba(237,230,218,.12);color:var(--cream);cursor:pointer;transition:all .3s;font:inherit}
+.tab .ic{flex:none;width:52px;height:52px;border-radius:26px;background:#2E2924;display:grid;place-items:center;transition:background .3s}
+.tab .ic svg{width:26px;height:26px;stroke:var(--cream);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tab b{display:block;font:600 19px var(--sans)}
+.tab span{display:block;font-size:15px;color:#A89F91;margin-top:2px}
+.tab[aria-selected="true"]{background:#24201B;border-color:var(--cream);transform:translateX(6px);box-shadow:0 18px 50px rgba(255,231,184,.08)}
+.tab[aria-selected="true"] .ic{background:var(--red)}
+.tab[aria-selected="true"] .ic svg{stroke:#fff}
+.who .hero-phone{width:100%;max-width:330px}
+.who .phone{background:#2A2622;box-shadow:0 50px 110px rgba(0,0,0,.7),0 0 0 2px rgba(255,231,184,.08),0 0 140px rgba(255,231,184,.08)}
+@media (max-width:880px){.who{grid-template-columns:1fr}.who .hero-phone{max-width:280px;order:-1}}
+
+/* ---------- veilleuse ---------- */
+.lamp{position:relative;height:clamp(420px,70vw,620px);border-radius:32px;overflow:hidden;background:#1b1612;touch-action:pan-y;cursor:crosshair}
+.lamp .desk{position:absolute;inset:0;background:repeating-linear-gradient(92deg,#2a1f17 0 3px,#24190f 3px 9px,#2c2016 9px 11px,#20160e 11px 19px);filter:saturate(.9)}
+.lamp .card{position:absolute;left:50%;top:50%;width:min(420px,78%);transform:translate(-50%,-50%) rotate(-2deg);background:#EFE6D2;padding:8% 9%;font:clamp(17px,2.6vw,23px)/1.8 Caveat,cursive;color:#3b2a1a;box-shadow:0 30px 60px rgba(0,0,0,.6)}
+.lamp .shade{position:absolute;inset:0;background:radial-gradient(circle at var(--x,50%) var(--y,40%),rgba(255,231,184,.0) 0,rgba(255,220,150,.06) 12%,rgba(10,8,6,.55) 34%,rgba(6,5,4,.93) 62%);transition:background .08s;pointer-events:none}
+.lamp .hint{position:absolute;bottom:18px;left:0;right:0;text-align:center;color:#a89f91;font:600 12px var(--mono);letter-spacing:.2em;text-transform:uppercase}
+
+/* ---------- fonctionnalités ---------- */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.feat{background:var(--surface);border:1px solid var(--line);border-radius:26px;padding:26px;transition:transform .35s cubic-bezier(.2,1.4,.4,1),box-shadow .35s}
+.feat:hover{transform:translateY(-6px);box-shadow:0 26px 50px rgba(27,32,48,.1)}
+.feat .ic{width:48px;height:48px;border-radius:24px;background:#FDE8E9;display:grid;place-items:center;margin-bottom:16px}
+.feat .ic svg{width:24px;height:24px;stroke:var(--red);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.feat h3{font-size:30px;line-height:1.05;margin-bottom:8px}
+.feat p{margin:0;color:var(--muted);font-size:16px}
+@media (max-width:980px){.grid{grid-template-columns:1fr 1fr}}
+@media (max-width:620px){.grid{grid-template-columns:1fr}}
+
+/* ---------- vidéo ---------- */
+.video{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,5vw,64px);align-items:center}
+.video video{width:100%;max-width:440px;aspect-ratio:4/5;border-radius:28px;background:#000;box-shadow:0 40px 80px rgba(27,32,48,.25);justify-self:center}
+@media (max-width:880px){.video{grid-template-columns:1fr}}
+
+/* ---------- sécurité ---------- */
+.trust{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.trust div{border-top:2px solid var(--ink);padding-top:16px}
+.trust b{display:block;font:600 18px var(--sans);margin-bottom:6px}
+.trust p{margin:0;color:var(--muted);font-size:15px}
+@media (max-width:880px){.trust{grid-template-columns:1fr 1fr}}
+@media (max-width:520px){.trust{grid-template-columns:1fr}}
+
+/* ---------- rejoindre ---------- */
+.join{background:var(--surface);border:1px solid var(--line);border-radius:36px;padding:clamp(28px,6vw,64px);display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;position:relative;overflow:hidden}
+.join ol{list-style:none;counter-reset:s;padding:0;margin:22px 0 0;display:grid;gap:16px}
+.join li{counter-increment:s;position:relative;padding-left:52px;color:var(--muted)}
+.join li b{color:var(--ink)}
+.join li::before{content:counter(s);position:absolute;left:0;top:-2px;width:36px;height:36px;border-radius:18px;background:var(--ink);color:#fff;display:grid;place-items:center;font:600 15px var(--mono)}
+.join .side{display:grid;gap:14px;justify-items:start}
+.join code{font:14px var(--mono);background:var(--alt);padding:3px 8px;border-radius:8px;word-break:break-all}
+@media (max-width:880px){.join{grid-template-columns:1fr}}
+
+footer{padding:50px 0 calc(40px + env(safe-area-inset-bottom));color:var(--muted);font-size:14px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:18px 26px;align-items:center;justify-content:space-between}
+footer nav{display:flex;flex-wrap:wrap;gap:18px}
+footer a{color:var(--muted)}
+
+/* bouton WhatsApp flottant (mobile) */
+.wa-float{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:60;width:58px;height:58px;border-radius:29px;background:var(--wa);display:grid;place-items:center;box-shadow:0 14px 30px rgba(37,211,102,.4);transform:scale(0);transition:transform .4s cubic-bezier(.3,1.6,.5,1)}
+.wa-float.show{transform:scale(1)}
+.wa-float svg{width:30px;height:30px}
+</style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <span class="mark"><svg viewBox="0 0 24 24"><path d="M2.5 11.2 21 3.5l-4.6 17.2-5.3-5.1-3.4 3.2.4-4.9L17 6.6 6.9 13.1z"/></svg></span><span class="brand">Lettre Ouverte</span>
-  </header>
-  <span class="postal">Le réseau social des lettres</span>
-  <h1>Écris comme <em>autrefois</em>.</h1>
-  <p>Choisis ton papier, ton encre, ta plume. Écris à toi-même pour dans dix ans, à quelqu'un qui compte, à un inconnu tiré au sort par Le Facteur, ou pose ta lettre sur La Table pour tous.</p>
-  <div class="card">
-    <p style="margin:0">Bientôt sur Google Play.</p>
+
+<!-- Icônes réutilisées -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-play" viewBox="0 0 24 24"><path fill="#00D7FE" d="M3.6 1.8 13.4 12 3.6 22.2c-.4-.2-.6-.6-.6-1.1V2.9c0-.5.2-.9.6-1.1z"/><path fill="#FFCE00" d="m17.1 8.3-3.7 3.7 3.7 3.7 4.2-2.4c1.2-.7 1.2-1.9 0-2.6z"/><path fill="#FF3A44" d="M17.1 15.7 13.4 12 3.6 22.2c.4.2.9.2 1.4-.1z"/><path fill="#00F076" d="M17.1 8.3 5 1.9c-.5-.3-1-.3-1.4-.1L13.4 12z"/></symbol>
+  <symbol id="i-wa" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.6 2.6 0 0 0 1.7-1.2 2.1 2.1 0 0 0 .1-1.2c0-.1-.2-.2-.5-.3z"/></symbol>
+  <symbol id="i-plane" viewBox="0 0 24 24"><path d="M2.5 11.2 21 3.5l-4.6 17.2-5.3-5.1-3.4 3.2.4-4.9L17 6.6 6.9 13.1z"/></symbol>
+</svg>
+
+<header class="nav" id="nav">
+  <div class="wrap">
+    <a href="#top" aria-label="Lettre Ouverte"><img src="img/logo_day.webp" alt="Lettre Ouverte" width="120" height="40"></a>
+    <nav class="nav-links">
+      <a class="hide-m" href="#atelier">L'atelier</a>
+      <a class="hide-m" href="#qui">À qui écrire</a>
+      <a class="hide-m" href="#plus">Fonctionnalités</a>
+      <a class="btn btn-red" href="#tester"><span class="beta">Tester l'app</span><span class="after">Télécharger</span></a>
+    </nav>
   </div>
-  <footer>
-    <a href="confidentialite">Confidentialité</a>
-    <a href="supprimer-mon-compte">Supprimer mon compte</a>
-    <a href="securite-des-enfants">Sécurité des enfants</a>
-    <span>Contact : hello@josuecode.com</span>
-  </footer>
-</div>
+</header>
+
+<main id="top">
+<!-- ===================== HÉROS ===================== -->
+<section class="hero grain">
+  <div class="wrap">
+    <div>
+      <div class="postal rv">Le réseau social des lettres</div>
+      <h1 class="rv d1">Écris comme <em>autrefois.</em></h1>
+      <p class="type rv d2" id="type" aria-label="Quand as-tu reçu une vraie lettre pour la dernière fois ?"></p>
+      <p class="lead rv d2">Lettre Ouverte, c'est le réseau social des <b>lettres</b>. Tu choisis ton papier, ton encre et ta plume. Tu scelles, et ta lettre arrive exactement comme tu l'as voulue. Pas de « likes » à la chaîne, pas de défilement sans fin : des mots qui restent.</p>
+      <div class="cta rv d3">
+        <a class="btn btn-play" href="https://play.google.com/store/apps/details?id=com.lettreouverte.app" target="_blank" rel="noopener">
+          <svg><use href="#i-play"/></svg><span><small>Disponible sur</small><b>Google Play</b></span>
+        </a>
+        <a class="btn btn-wa wa-link" href="#" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg>WhatsApp</a>
+      </div>
+      <a class="beta-tag beta rv d3" href="#tester"><i>β</i><span><b>En test fermé jusqu'au 15 novembre.</b> Pour l'installer dès maintenant, envoie-nous ton adresse Gmail : on t'ajoute en une minute.</span></a>
+    </div>
+    <div class="hero-phone rv d2" id="heroPhone">
+      <div class="phone"><div class="screen">
+        <img class="on" src="img/table_day.webp" alt="La Table : le fil des lettres ouvertes" width="540" height="1206" fetchpriority="high">
+        <img src="img/compose.webp" alt="Écrire une lettre" width="540" height="1206" loading="lazy">
+        <img src="img/read_night.webp" alt="Lire une lettre la nuit" width="540" height="1206" loading="lazy">
+        <img src="img/inbox.webp" alt="La boîte aux lettres" width="540" height="1206" loading="lazy">
+      </div></div>
+      <svg class="float f-stamp" viewBox="0 0 80 96"><rect width="80" height="96" fill="#fff"/><rect x="6" y="6" width="68" height="84" fill="#1F3A93"/><path d="M58 18c-14 3-25 14-30 30l-5 12 4-2c3-7 7-12 12-15-3 0-7 1-9 3 7-12 16-21 28-28z" fill="#fff"/></svg>
+      <svg class="float f-wax" viewBox="0 0 100 100"><defs><radialGradient id="wx" cx=".36" cy=".32"><stop offset="0" stop-color="#ff5d62"/><stop offset=".56" stop-color="#c4141b"/><stop offset="1" stop-color="#8e0d12"/></radialGradient></defs><circle cx="50" cy="50" r="46" fill="url(#wx)"/><circle cx="50" cy="50" r="30" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="2"/><use href="#i-plane" x="34" y="34" width="32" height="32" fill="rgba(255,255,255,.55)"/></svg>
+      <svg class="float f-mark" viewBox="0 0 120 120"><circle cx="60" cy="60" r="54" fill="none" stroke="#1F3A93" stroke-width="3"/><circle cx="60" cy="60" r="34" fill="none" stroke="#1F3A93" stroke-width="2"/><text x="60" y="65" text-anchor="middle" font-family="JetBrains Mono" font-size="12" font-weight="600" fill="#1F3A93">PAR AVION</text></svg>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== TROIS GESTES ===================== -->
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="postal rv">Le concept</div>
+      <h2 class="rv d1">Trois gestes, <em>et c'est parti.</em></h2>
+    </div>
+    <div class="steps">
+      <div class="step rv"><div class="n">01</div><h3>Écris</h3><p>Sur une vraie feuille : papier, encre, écriture à la main ou à la machine, une photo si tu veux. Gras, italique, mentions @pseudo.</p>
+        <svg viewBox="0 0 24 24" fill="none" stroke="#ED1C24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4l6 6L9 21H3v-6z"/><path d="M12 6l6 6"/></svg></div>
+      <div class="step rv d1"><div class="n">02</div><h3>Scelle</h3><p>Maintiens le bouton : la lettre se plie, glisse dans l'enveloppe, reçoit son timbre et son cachet. Une fois scellée, elle ne se modifie plus.</p>
+        <svg viewBox="0 0 24 24" fill="none" stroke="#ED1C24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></div>
+      <div class="step rv d2"><div class="n">03</div><h3>Le Facteur livre</h3><p>Elle arrive chez la bonne personne, qui l'ouvre en déchirant le bord ou en brisant le cachet. Et Le Facteur veille à ce que chaque lettre trouve un lecteur.</p>
+        <svg viewBox="0 0 24 24" fill="#ED1C24"><use href="#i-plane"/></svg></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ATELIER ===================== -->
+<section id="atelier" class="grain" style="background:#F1EEE6">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="postal rv">L'atelier — essaie !</div>
+      <h2 class="rv d1">Ton papier, ton encre, <em>ta plume.</em></h2>
+      <p class="lead rv d2">Touche les options et écris directement sur la feuille : c'est exactement ce que tu feras dans l'app (en mieux : relief du papier, encre qui s'épuise, plis…).</p>
+    </div>
+    <div class="atelier">
+      <div class="sheet lined rv" id="letter">
+        <svg class="stamp" viewBox="0 0 80 96"><rect width="80" height="96" fill="#fff"/><rect x="6" y="6" width="68" height="84" fill="#1F3A93"/><path d="M58 18c-14 3-25 14-30 30l-5 12 4-2c3-7 7-12 12-15-3 0-7 1-9 3 7-12 16-21 28-28z" fill="#fff"/></svg>
+        <div class="date" id="date"></div>
+        <div class="body" id="body" contenteditable="true" spellcheck="false" aria-label="Écris ta lettre ici">Mamie,
+Tu me manques. Je viens te voir samedi, avec les mangues du jardin.</div>
+        <div class="sign">— Toi</div>
+      </div>
+      <div class="controls rv d1">
+        <div><div class="ctrl-label">Papier</div><div class="chips" data-group="paper">
+          <button class="chip" data-v="porcelaine"><span class="sw" style="background:#FBFAF6"></span>Porcelaine</button>
+          <button class="chip" aria-pressed="true" data-v="ivoire"><span class="sw" style="background:#F4EEDF"></span>Ivoire</button>
+          <button class="chip" data-v="parchemin"><span class="sw" style="background:#E9D9B4"></span>Parchemin</button>
+          <button class="chip" data-v="kraft"><span class="sw" style="background:#C8A272"></span>Kraft</button>
+          <button class="chip" data-v="avion"><span class="sw" style="background:#E3EAF2"></span>Par Avion</button>
+        </div></div>
+        <div><div class="ctrl-label">Encre</div><div class="chips" data-group="ink">
+          <button class="chip" data-v="#1A1A1F"><span class="sw" style="background:#1A1A1F"></span>Noire</button>
+          <button class="chip" aria-pressed="true" data-v="#2846B4"><span class="sw" style="background:#2846B4"></span>Bleue</button>
+          <button class="chip" data-v="#6B4423"><span class="sw" style="background:#6B4423"></span>Sépia</button>
+          <button class="chip" data-v="#9B1C2E"><span class="sw" style="background:#9B1C2E"></span>Carmin</button>
+        </div></div>
+        <div><div class="ctrl-label">Écriture</div><div class="chips" data-group="hand">
+          <button class="chip" aria-pressed="true" data-v="Caveat, cursive" style="font-family:Caveat;font-size:19px">Spontanée</button>
+          <button class="chip" data-v="'Homemade Apple', cursive" style="font-family:'Homemade Apple';font-size:13px">Cursive</button>
+          <button class="chip" data-v="'Shadows Into Light', cursive" style="font-family:'Shadows Into Light'">Fine</button>
+          <button class="chip" data-v="'Courier Prime', monospace" style="font-family:'Courier Prime'">Machine</button>
+        </div></div>
+        <div><div class="ctrl-label">Réglure</div><div class="chips" data-group="rule">
+          <button class="chip" aria-pressed="true" data-v="lined">Lignée</button>
+          <button class="chip" data-v="none">Vierge</button>
+        </div></div>
+        <p class="hint">Astuce : touche la feuille pour écrire ton propre texte.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SCELLER ===================== -->
+<section>
+  <div class="wrap seal-demo">
+    <div>
+      <div class="postal rv">Le moment fort</div>
+      <h2 class="rv d1">Puis <em>scelle-la.</em></h2>
+      <p class="lead rv d2">Dans l'app, tu maintiens le bouton et ta lettre se plie, entre dans l'enveloppe, reçoit son timbre, le coup de tampon… et s'envole. À l'arrivée, on la décachette. Essaie :</p>
+      <div class="cta rv d3">
+        <button class="btn btn-red" id="sealBtn">Sceller la lettre</button>
+        <button class="btn btn-ghost" id="resetBtn" hidden>Recommencer</button>
+      </div>
+    </div>
+    <div class="stage rv" id="stage">
+      <div class="env">
+        <div class="back"></div>
+        <div class="paper">Chère Awa,<br>On se voit samedi&nbsp;?<br>Je t'apporte les mangues.</div>
+        <div class="front"></div>
+        <div class="flap"></div>
+        <svg class="stampbox" viewBox="0 0 80 96"><rect width="80" height="96" fill="#fff"/><rect x="6" y="6" width="68" height="84" fill="#ED1C24"/><use href="#i-plane" x="18" y="26" width="44" height="44" fill="#fff"/></svg>
+        <svg class="pm" viewBox="0 0 120 120"><circle cx="60" cy="60" r="54" fill="none" stroke="#1F3A93" stroke-width="3"/><circle cx="60" cy="60" r="34" fill="none" stroke="#1F3A93" stroke-width="2"/><text x="60" y="65" text-anchor="middle" font-family="JetBrains Mono" font-size="12" font-weight="600" fill="#1F3A93">LE FACTEUR</text></svg>
+        <div class="wax"><svg viewBox="0 0 24 24"><use href="#i-plane"/></svg></div>
+      </div>
+      <div class="msg">Envoyée ✈ Le Facteur l'emporte</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== À QUI ===================== -->
+<section id="qui" class="night">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="postal rv">Cinq façons d'écrire</div>
+      <h2 class="rv d1">À qui <em>écris-tu&nbsp;?</em></h2>
+    </div>
+    <div class="who">
+      <div class="tabs" role="tablist">
+        <button class="tab rv" role="tab" aria-selected="true" data-img="intents_night"><span class="ic"><svg viewBox="0 0 24 24"><path d="M7 3h10v3.5a5 5 0 0 1-2.4 4.3L13 12l1.6 1.2A5 5 0 0 1 17 17.5V21H7v-3.5a5 5 0 0 1 2.4-4.3L11 12l-1.6-1.2A5 5 0 0 1 7 6.5z"/></svg></span><span><b>À toi, dans dix ans</b><span>Scellée jusqu'au jour choisi, même pour toi. Avec des gardiens, si quelque chose t'arrive.</span></span></button>
+        <button class="tab rv d1" role="tab" aria-selected="false" data-img="compose"><span class="ic"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></span><span><b>À quelqu'un qui compte</b><span>Sur l'app, ou par un simple lien : elle s'ouvre même sans compte. Datée pour un anniversaire, si tu veux.</span></span></button>
+        <button class="tab rv d2" role="tab" aria-selected="false" data-img="inbox"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 7h3.5c2 0 3.1 1 4.3 2.8l1.4 2.4c1.2 1.8 2.3 2.8 4.3 2.8H20M17 12l3 3-3 3M4 17h3.5c1.2 0 2-.4 2.8-1.2M14.6 8.2c.8-.8 1.6-1.2 2.9-1.2H20M17 4l3 3-3 3"/></svg></span><span><b>Au hasard</b><span>Le Facteur la remet à une seule personne, tirée au sort. Signée ou anonyme.</span></span></button>
+        <button class="tab rv d3" role="tab" aria-selected="false" data-img="table_night"><span class="ic"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18M12 3c2.6 2.5 3.8 5.5 3.8 9s-1.2 6.5-3.8 9c-2.6-2.5-3.8-5.5-3.8-9S9.4 5.5 12 3z"/></svg></span><span><b>Sur La Table</b><span>Une lettre ouverte, lue par tous. Les autres la lisent, sont « touchés », répondent.</span></span></button>
+        <button class="tab rv d3" role="tab" aria-selected="false" data-img="maison"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 5h11v8H8l-4 3zM9 16v1h7l4 3V9h-3"/></svg></span><span><b>À tes correspondants</b><span>Un cercle choisi, réciproque. Et parmi eux, tes Proches.</span></span></button>
+      </div>
+      <div class="hero-phone rv d1" style="justify-self:center">
+        <div class="phone"><div class="screen" id="whoScreen">
+          <img class="on" src="img/intents_night.webp" alt="" width="540" height="1206">
+        </div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== VEILLEUSE ===================== -->
+<section class="night" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="postal rv">La nuit</div>
+      <h2 class="rv d1">La Veilleuse <em>s'allume.</em></h2>
+      <p class="lead rv d2">Le soir, l'app passe sur un bureau en bois, éclairé par une lampe. Incline ton téléphone : la lumière suit. Ici, déplace ton doigt ou ta souris.</p>
+    </div>
+    <div class="lamp rv" id="lamp">
+      <div class="desk"></div>
+      <div class="card">Ce soir il pleut sur le toit de tôle.<br>As-tu fini par ouvrir l'atelier&nbsp;?<br>Je pense à toi.<br><br style="line-height:.6">— Issa</div>
+      <div class="shade"></div>
+      <div class="hint">Déplace la lampe</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FONCTIONNALITÉS ===================== -->
+<section id="plus">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="postal rv">Et aussi</div>
+      <h2 class="rv d1">Bien plus <em>qu'une lettre.</em></h2>
+    </div>
+    <div class="grid">
+      <div class="feat rv"><div class="ic"><svg viewBox="0 0 24 24"><path d="M3 7h18M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></div><h3>Le Facteur</h3><p>Une lettre de La Table attend son premier lecteur ? Tire-la au hasard. Chaque lettre trouve au moins quelqu'un.</p></div>
+      <div class="feat rv d1"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3a4 4 0 0 1 4 4v3H8V7a4 4 0 0 1 4-4zM5 10h14v11H5z"/></svg></div><h3>Capsules gardées</h3><p>Une lettre pour dans dix ans. Si tu ne donnes plus signe de vie, elle est confiée à tes gardiens.</p></div>
+      <div class="feat rv d2"><div class="ic"><svg viewBox="0 0 24 24"><path d="M4 5h11v8H8l-4 3zM9 16v1h7l4 3V9h-3"/></svg></div><h3>Correspondants</h3><p>Demande à correspondre avec un petit mot. Si l'autre accepte, vos lettres se rangent dans un fil rien qu'à vous.</p></div>
+      <div class="feat rv"><div class="ic"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9H3zM9 20v-6h6v6"/></svg></div><h3>Maisons & Gazette</h3><p>Revues, associations, auteurs : des pages tenues à plusieurs, certifiées, qui écrivent une Gazette à leurs abonnés.</p></div>
+      <div class="feat rv d1"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></div><h3>Touché & réponses</h3><p>Pas de compteur de likes à la chaîne : on est « touché », on répond par un billet, on suit les plumes qu'on aime.</p></div>
+      <div class="feat rv d2"><div class="ic"><svg viewBox="0 0 24 24"><path d="M15 9a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM5 20c1-3.5 4-5 7-5s6 1.5 7 5"/></svg></div><h3>Signée ou anonyme</h3><p>Tu signes de ton nom de plume, ou tu restes anonyme : ton nom n'est alors jamais montré à personne.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== VIDÉO ===================== -->
+<section class="grain" style="background:#F1EEE6">
+  <div class="wrap video">
+    <div>
+      <div class="postal rv">En 50 secondes</div>
+      <h2 class="rv d1">Regarde-la <em>en vrai.</em></h2>
+      <p class="lead rv d2">Écrire, sceller, recevoir, ouvrir — et la nuit, sous la lampe.</p>
+    </div>
+    <video class="rv d1" src="img/presentation.mp4" poster="img/presentation.jpg" controls playsinline preload="none"></video>
+  </div>
+</section>
+
+<!-- ===================== CONFIANCE ===================== -->
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="postal rv">Confiance</div>
+      <h2 class="rv d1">Tes mots <em>sont protégés.</em></h2>
+    </div>
+    <div class="trust">
+      <div class="rv"><b>Réservé aux adultes</b><p>18 ans et plus, date de naissance vérifiée à l'inscription.</p></div>
+      <div class="rv d1"><b>Anonymat réel</b><p>Une lettre anonyme ne révèle jamais son auteur.</p></div>
+      <div class="rv d2"><b>Signaler, bloquer</b><p>Sur chaque lettre et chaque réponse. La modération est alertée aussitôt.</p></div>
+      <div class="rv d3"><b>Tes données</b><p>Aucune publicité, aucun traceur. <a href="confidentialite">Confidentialité</a> · <a href="supprimer-mon-compte">supprimer mon compte</a>.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== REJOINDRE ===================== -->
+<section id="tester" style="padding-top:0">
+  <div class="wrap">
+    <div class="join grain rv">
+      <div>
+        <div class="postal beta">Test fermé — jusqu'au 15 novembre</div>
+        <div class="postal after">Sur Android</div>
+        <h2 style="margin-top:12px"><span class="beta">Rejoins <em>les premiers.</em></span><span class="after">Écris ta <em>première lettre.</em></span></h2>
+        <ol class="beta">
+          <li><b>Envoie-nous ton adresse Gmail</b> (celle de ton téléphone Android) sur WhatsApp, en touchant le bouton.</li>
+          <li><b>On t'ajoute à la liste des testeurs</b>, en général en quelques minutes.</li>
+          <li><b>Ouvre le lien de test</b> depuis ton téléphone, accepte, puis installe l'app depuis Google Play (bouton « Ouvrir le lien de test »).</li>
+        </ol>
+        <p class="lead after" style="margin-top:18px">Gratuite, sans publicité. Disponible sur Google Play pour Android.</p>
+      </div>
+      <div class="side">
+        <a class="btn btn-wa wa-link beta" href="#" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg>Envoyer mon Gmail sur WhatsApp</a>
+        <a class="btn btn-ghost beta" href="https://play.google.com/apps/testing/com.lettreouverte.app" target="_blank" rel="noopener">Ouvrir le lien de test</a>
+        <a class="btn btn-play" href="https://play.google.com/store/apps/details?id=com.lettreouverte.app" target="_blank" rel="noopener"><svg><use href="#i-play"/></svg><span><small>Disponible sur</small><b>Google Play</b></span></a>
+        <p class="hint beta" style="margin:4px 0 0">WhatsApp : +226 75 04 13 06</p>
+        <a class="btn btn-wa wa-link after" href="#" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg>Une question ? WhatsApp</a>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Lettre Ouverte · JosueCode</span>
+    <nav>
+      <a href="confidentialite">Confidentialité</a>
+      <a href="supprimer-mon-compte">Supprimer mon compte</a>
+      <a href="securite-des-enfants">Sécurité des enfants</a>
+      <a href="mailto:hello@josuecode.com">hello@josuecode.com</a>
+    </nav>
+  </div>
+</footer>
+
+<a class="wa-float wa-link" href="#" target="_blank" rel="noopener" aria-label="Nous écrire sur WhatsApp"><svg style="color:#05210f"><use href="#i-wa"/></svg></a>
+
+<script>
+(() => {
+  const released = document.documentElement.classList.contains("released");
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const buzz = (ms) => { try { navigator.vibrate && navigator.vibrate(ms); } catch (_) {} };
+
+  // WhatsApp : message prérempli selon la période.
+  const waText = released
+    ? "Bonjour ! J'ai une question sur Lettre Ouverte."
+    : "Bonjour ! Je veux tester Lettre Ouverte. Mon adresse Gmail : ";
+  document.querySelectorAll(".wa-link").forEach((a) => (a.href = "https://wa.me/22675041306?text=" + encodeURIComponent(waText)));
+
+  // Barre : bordure au défilement, bouton WhatsApp flottant après le héros.
+  const nav = document.getElementById("nav");
+  const fab = document.querySelector(".wa-float");
+  const onScroll = () => {
+    nav.classList.toggle("scrolled", scrollY > 8);
+    fab.classList.toggle("show", scrollY > innerHeight * 0.9);
+  };
+  addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  // Révélations au défilement.
+  const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: 0.14 });
+  document.querySelectorAll(".rv").forEach((el) => io.observe(el));
+
+  // Machine à écrire.
+  const typeEl = document.getElementById("type");
+  const line = "Quand as-tu reçu une vraie lettre pour la dernière fois ?";
+  if (reduce) typeEl.textContent = line;
+  else {
+    let i = 0;
+    const tick = () => {
+      typeEl.innerHTML = line.slice(0, i) + '<span class="cur">_</span>';
+      if (i++ < line.length) setTimeout(tick, 38 + Math.random() * 50);
+    };
+    setTimeout(tick, 700);
+  }
+
+  // Téléphone du héros : diaporama.
+  const shots = [...document.querySelectorAll("#heroPhone .screen img")];
+  let k = 0;
+  if (!reduce) setInterval(() => { shots[k].classList.remove("on"); k = (k + 1) % shots.length; shots[k].classList.add("on"); }, 3200);
+
+  // Atelier.
+  const months = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
+  const d = new Date();
+  document.getElementById("date").textContent = `le ${d.getDate() === 1 ? "1er" : d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+  const letter = document.getElementById("letter");
+  const PAPERS = {
+    porcelaine: { bg: "#FBFAF6", cls: "" },
+    ivoire: { bg: "#F4EEDF", cls: "" },
+    parchemin: { bg: "#E9D9B4", cls: "gilded" },
+    kraft: { bg: "#C8A272", cls: "" },
+    avion: { bg: "#E3EAF2", cls: "airmail" },
+  };
+  const state = { paper: "ivoire", ink: "#2846B4", hand: "Caveat, cursive", rule: "lined" };
+  const apply = () => {
+    const p = PAPERS[state.paper];
+    letter.style.backgroundColor = p.bg;
+    letter.className = "sheet rv in " + (state.rule === "lined" ? "lined " : "") + p.cls;
+    letter.style.color = state.ink;
+    letter.style.fontFamily = state.hand;
+    const mono = state.hand.includes("Courier");
+    const cursive = state.hand.includes("Homemade");
+    letter.style.fontSize = mono ? "clamp(15px,2.2vw,19px)" : cursive ? "clamp(14px,2vw,18px)" : "";
+  };
+  document.querySelectorAll(".chips").forEach((g) => g.addEventListener("click", (e) => {
+    const b = e.target.closest(".chip");
+    if (!b) return;
+    g.querySelectorAll(".chip").forEach((c) => c.setAttribute("aria-pressed", c === b));
+    state[g.dataset.group] = b.dataset.v;
+    buzz(8);
+    apply();
+    letter.animate([{ transform: "rotate(-1.2deg) scale(.985)" }, { transform: "rotate(-1.2deg) scale(1)" }], { duration: 380, easing: "cubic-bezier(.2,1.6,.4,1)" });
+  }));
+  apply();
+
+  // Scellement.
+  const stage = document.getElementById("stage");
+  const sealBtn = document.getElementById("sealBtn");
+  const resetBtn = document.getElementById("resetBtn");
+  let step = 0;
+  sealBtn.addEventListener("click", () => {
+    if (step === 0) {
+      step = 1; sealBtn.disabled = true; buzz(12);
+      stage.classList.add("sealed");
+      setTimeout(() => buzz([0, 30, 60, 40]), 1150);
+      setTimeout(() => { sealBtn.textContent = "Envoyer"; sealBtn.disabled = false; }, 2000);
+    } else if (step === 1) {
+      step = 2; buzz(20);
+      stage.classList.add("flown");
+      setTimeout(() => {
+        stage.classList.remove("flown", "sealed");
+        stage.classList.add("sealed");
+        sealBtn.textContent = "Briser le cachet"; step = 3;
+      }, 2400);
+    } else if (step === 3) {
+      step = 4; buzz([0, 15, 30, 15, 30, 60]);
+      stage.classList.add("cracked");
+      setTimeout(() => { sealBtn.hidden = true; resetBtn.hidden = false; }, 1300);
+    }
+  });
+  resetBtn.addEventListener("click", () => {
+    stage.className = "stage rv in"; step = 0;
+    sealBtn.hidden = false; resetBtn.hidden = true; sealBtn.textContent = "Sceller la lettre";
+  });
+
+  // À qui écris-tu.
+  const whoScreen = document.getElementById("whoScreen");
+  document.querySelectorAll(".tab").forEach((t) => t.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach((x) => x.setAttribute("aria-selected", x === t));
+    buzz(8);
+    const img = document.createElement("img");
+    img.src = `img/${t.dataset.img}.webp`; img.alt = ""; img.width = 540; img.height = 1206;
+    whoScreen.appendChild(img);
+    requestAnimationFrame(() => requestAnimationFrame(() => img.classList.add("on")));
+    setTimeout(() => { while (whoScreen.children.length > 1) whoScreen.firstElementChild.remove(); }, 950);
+  }));
+
+  // Veilleuse : la lampe suit le doigt, la souris, ou l'inclinaison du téléphone.
+  const lamp = document.getElementById("lamp");
+  const setLamp = (x, y) => { lamp.style.setProperty("--x", x + "%"); lamp.style.setProperty("--y", y + "%"); };
+  const fromEvent = (e) => {
+    const r = lamp.getBoundingClientRect();
+    const p = e.touches ? e.touches[0] : e;
+    setLamp(((p.clientX - r.left) / r.width) * 100, ((p.clientY - r.top) / r.height) * 100);
+  };
+  lamp.addEventListener("pointermove", fromEvent);
+  lamp.addEventListener("touchmove", fromEvent, { passive: true });
+  let tilted = false;
+  addEventListener("deviceorientation", (e) => {
+    if (e.gamma == null) return;
+    tilted = true;
+    setLamp(50 + Math.max(-40, Math.min(40, e.gamma)) * 1.1, 40 + Math.max(-30, Math.min(30, (e.beta || 45) - 45)) * 1.2);
+  });
+  // Sans capteur ni pointeur : la lampe se balance doucement.
+  if (!reduce) {
+    let t = 0;
+    const sway = () => { if (!tilted && !lamp.matches(":hover")) { t += 0.012; setLamp(50 + Math.sin(t) * 22, 42 + Math.cos(t * 0.8) * 12); } requestAnimationFrame(sway); };
+    sway();
+  }
+})();
+</script>
 </body>
 </html>
